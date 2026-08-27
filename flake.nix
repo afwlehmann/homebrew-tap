@@ -34,7 +34,7 @@
           git-hooks = git-hooks.lib.${system}.run {
             src = self;
             hooks = {
-              nixfmt-rfc-style.enable = true;
+              nixfmt.enable = true;
               shellcheck.enable = true;
               shfmt.enable = true;
               convco.enable = true;
@@ -52,10 +52,11 @@
           default = pkgs.mkShell {
             packages = with pkgs; [
               curl
+              gh
               shellcheck
               shfmt
               convco
-              nixfmt-rfc-style
+              nixfmt
             ];
             inherit (self.checks.${system}.git-hooks) shellHook;
           };
