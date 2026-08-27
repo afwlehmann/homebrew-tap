@@ -1,0 +1,15 @@
+name: nix-check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  nix-flake-check:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@v16
+      - uses: DeterminateSystems/magic-nix-cache-action@v9
+      - run: nix flake check
