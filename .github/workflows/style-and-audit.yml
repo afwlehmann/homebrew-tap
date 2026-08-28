@@ -29,6 +29,7 @@ jobs:
         run: |
           mkdir -p "$(brew --repo)/Library/Taps/afwlehmann"
           ln -s "$GITHUB_WORKSPACE" "$(brew --repo)/Library/Taps/afwlehmann/homebrew-tap"
+          brew trust afwlehmann/tap
       - name: brew style
         run: brew style "Casks/${{ matrix.cask }}.rb"
       - name: brew audit
