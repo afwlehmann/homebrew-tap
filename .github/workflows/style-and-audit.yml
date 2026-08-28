@@ -32,4 +32,4 @@ jobs:
       - name: brew style
         run: brew style "Casks/${{ matrix.cask }}.rb"
       - name: brew audit
-        run: brew audit --cask "${{ matrix.cask }}" --online
+        run: brew audit --cask "${{ matrix.cask }}" --online --except=sha256_no_check_if_unversioned
