@@ -1,0 +1,45 @@
+name: livecheck-dissectmac
+
+on:
+  schedule:
+    - cron: "0 7 1 * *"
+  workflow_dispatch:
+
+jobs:
+  bump:
+    runs-on: macos-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@v16
+      - name: Run bump script
+        run: |
+          chmod +x scripts/bump-dissectmac.sh
+          nix develop -c bash scripts/bump-dissectmac.sh
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --exit-code Casks/dissectmac.rb; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            VERSION=$(grep -m1 'version "' Casks/dissectmac.rb | sed 's/.*version "//; s/".*//')
+            echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Create PR
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "bump-dissectmac-${{ steps.changes.outputs.version }}"
+          git add Casks/dissectmac.rb
+          git commit -m "chore: bump dissectmac to ${{ steps.changes.outputs.version }}"
+          git push origin "bump-dissectmac-${{ steps.changes.outputs.version }}"
+          gh pr create \
+            --title "chore: bump dissectmac to ${{ steps.changes.outputs.version }}" \
+            --body "Automated version bump for dissectmac." \
+            --base main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

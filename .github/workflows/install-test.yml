@@ -1,0 +1,21 @@
+name: install-test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  install:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Symlink tap
+        run: |
+          mkdir -p "$(brew --repo)/Library/Taps/afwlehmann"
+          ln -s "$GITHUB_WORKSPACE" "$(brew --repo)/Library/Taps/afwlehmann/homebrew-tap"
+      - name: brew install --cask
+        run: brew install --cask dissectmac
+      - name: Verify app exists
+        run: test -d /Applications/DissectMac.app
+      - name: Uninstall
+        if: always()
+        run: brew uninstall --cask dissectmac || true

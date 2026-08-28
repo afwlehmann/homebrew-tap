@@ -1,0 +1,7 @@
+# Nix flake lockfile — generated artifacts should NOT be committed.
+# The flake.lock IS tracked (needed for reproducible CI), but .bak files etc. are not.
+*.bak
+*.bak[0-9]
+.DS_Store
+result
+result-*
